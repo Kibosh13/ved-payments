@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07110f">
+  <meta name="description" content="Подбор маршрутов и проверенных агентов для международных платежей бизнеса и физических лиц.">
+  <title>ВЭД / Расчёты — международные платежные маршруты</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2307110f'/%3E%3Cpath d='M7 10h11l7 6-7 6H7l7-6-7-6Z' fill='none' stroke='%23b7f34a' stroke-width='2.4' stroke-linejoin='round'/%3E%3Ccircle cx='16' cy='16' r='2.6' fill='%23b7f34a'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --ink: #07110f;
+      --ink-soft: #0b1916;
+      --panel: #10211d;
+      --line: #28433b;
+      --line-bright: #3f6358;
+      --paper: #f2f5ed;
+      --paper-muted: #b8c5bd;
+      --acid: #b7f34a;
+      --cyan: #65e6d4;
+      --danger: #ff7c6b;
+      --shadow: 0 24px 80px rgba(0,0,0,.28);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--paper);
+      background: var(--ink);
+      font: 400 16px/1.55 Inter, Arial, sans-serif;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .2;
+      background-image: linear-gradient(rgba(183,243,74,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(183,243,74,.08) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(to bottom, #000 0, transparent 72%);
+      z-index: -1;
+    }
+    a { color: inherit; }
+    button, input, select, textarea { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    :focus-visible { outline: 2px solid var(--acid); outline-offset: 4px; }
+    .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--acid);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 28px; height: 1px; background: currentColor; }
+    .muted { color: var(--paper-muted); }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(7,17,15,.88);
+      border-bottom: 1px solid rgba(63,99,88,.55);
+      backdrop-filter: blur(18px);
+    }
+    .nav { height: 78px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: flex; align-items: center; gap: 13px; text-decoration: none; font-weight: 800; letter-spacing: -.02em; }
+    .brand-mark { width: 36px; height: 36px; display: grid; place-items: center; color: var(--acid); border: 1px solid var(--line-bright); border-radius: 10px; }
+    .brand small { display: block; color: var(--paper-muted); font-size: .62rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+    nav { display: flex; align-items: center; gap: 26px; }
+    nav a { color: var(--paper-muted); text-decoration: none; font-size: .9rem; font-weight: 600; }
+    nav a:hover { color: var(--paper); }
+    .phone { color: var(--paper); }
+    .button {
+      display: inline-flex;
+      min-height: 50px;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 0 22px;
+      border: 1px solid var(--acid);
+      border-radius: 999px;
+      color: var(--ink);
+      background: var(--acid);
+      text-decoration: none;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease;
+    }
+    .button:hover { transform: translateY(-2px); background: #c7ff60; }
+    .button.secondary { color: var(--paper); background: transparent; border-color: var(--line-bright); }
+    .button.secondary:hover { border-color: var(--paper-muted); background: rgba(255,255,255,.04); }
+    .button svg { width: 18px; height: 18px; }
+
+    .hero { min-height: calc(100vh - 78px); display: flex; align-items: center; padding: 72px 0 88px; }
+    .hero-grid { display: grid; grid-template-columns: 1.12fr .88fr; align-items: center; gap: 72px; }
+    h1, h2, h3 { margin: 0; font-family: Manrope, Inter, sans-serif; line-height: 1.06; letter-spacing: -.045em; }
+    h1 { max-width: 780px; margin-top: 24px; font-size: clamp(3.2rem, 7.2vw, 6.8rem); font-weight: 600; }
+    h1 span { color: var(--acid); }
+    .hero-copy > p { max-width: 675px; margin: 30px 0 0; color: var(--paper-muted); font-size: clamp(1.05rem, 1.8vw, 1.24rem); line-height: 1.65; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+    .hero-foot { display: flex; gap: 32px; margin-top: 48px; padding-top: 22px; border-top: 1px solid var(--line); }
+    .hero-fact { min-width: 130px; }
+    .hero-fact b { display: block; color: var(--paper); font-family: Manrope; font-size: 1.35rem; }
+    .hero-fact span { color: var(--paper-muted); font-size: .8rem; }
+
+    .route-card { position: relative; padding: 28px; border: 1px solid var(--line-bright); border-radius: 30px; background: rgba(16,33,29,.88); box-shadow: var(--shadow); }
+    .route-card::after { content: ""; position: absolute; inset: 12px -12px -12px 12px; z-index: -1; border: 1px solid rgba(183,243,74,.26); border-radius: 30px; }
+    .route-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+    .route-head strong { font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; }
+    .status { display: flex; align-items: center; gap: 8px; color: var(--cyan); font-size: .74rem; font-weight: 700; }
+    .status i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 5px rgba(101,230,212,.1); }
+    .route-map { position: relative; height: 308px; padding: 52px 4px 0; }
+    .route-line { position: absolute; top: 94px; left: 12%; right: 12%; height: 1px; background: var(--line-bright); }
+    .route-line::before { content: ""; position: absolute; left: 0; top: -1px; width: 62%; height: 3px; background: var(--acid); animation: scan 3.2s ease-in-out infinite; }
+    @keyframes scan { 0%,100% { width: 10%; opacity: .45; } 55% { width: 78%; opacity: 1; } }
+    .route-nodes { position: relative; z-index: 2; display: flex; justify-content: space-between; }
+    .node { width: 33.333%; text-align: center; }
+    .node-dot { width: 40px; height: 40px; display: grid; place-items: center; margin: 0 auto 14px; border: 1px solid var(--line-bright); border-radius: 50%; background: var(--panel); color: var(--paper-muted); font-size: .72rem; font-weight: 800; }
+    .node.active .node-dot { color: var(--ink); border-color: var(--acid); background: var(--acid); box-shadow: 0 0 0 8px rgba(183,243,74,.08); }
+    .node b { display: block; font-size: .88rem; }
+    .node span { display: block; margin-top: 4px; color: var(--paper-muted); font-size: .72rem; }
+    .route-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; position: absolute; left: 0; right: 0; bottom: 0; }
+    .route-stat { padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: rgba(7,17,15,.55); }
+    .route-stat small { display: block; color: var(--paper-muted); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; }
+    .route-stat b { display: block; margin-top: 5px; font-family: Manrope; font-size: 1.15rem; }
+    .route-note { display: flex; align-items: flex-start; gap: 10px; margin-top: 20px; color: var(--paper-muted); font-size: .76rem; }
+    .route-note svg { flex: 0 0 17px; margin-top: 2px; color: var(--cyan); }
+
+    section { padding: 112px 0; }
+    .section-head { display: grid; grid-template-columns: .8fr 1.2fr; gap: 60px; align-items: end; margin-bottom: 56px; }
+    .section-head h2 { margin-top: 18px; font-size: clamp(2.3rem, 5vw, 4.7rem); font-weight: 600; }
+    .section-head p { max-width: 620px; margin: 0; color: var(--paper-muted); font-size: 1.05rem; }
+
+    .about { background: var(--paper); color: var(--ink); }
+    .about .eyebrow { color: #496815; }
+    .about .section-head p { color: #4e5d57; }
+    .about-grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 18px; }
+    .about-main { position: relative; min-height: 420px; padding: 42px; overflow: hidden; border-radius: var(--radius); background: var(--ink); color: var(--paper); }
+    .about-main blockquote { max-width: 680px; margin: 0; font-family: Manrope; font-size: clamp(1.7rem, 3.3vw, 3.25rem); font-weight: 500; line-height: 1.15; letter-spacing: -.035em; }
+    .about-main blockquote span { color: var(--acid); }
+    .about-main footer { position: absolute; left: 42px; bottom: 42px; color: var(--paper-muted); font-size: .85rem; }
+    .experience { display: flex; min-height: 420px; flex-direction: column; justify-content: space-between; padding: 36px; border: 1px solid #c5cec6; border-radius: var(--radius); }
+    .experience strong { display: block; color: #30504a; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; }
+    .big-number { font-family: Manrope; font-size: clamp(5.5rem, 11vw, 9rem); line-height: .9; letter-spacing: -.08em; }
+    .big-number em { color: #719c22; font-style: normal; }
+    .experience p { margin: 0; color: #4e5d57; }
+
+    .services-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 18px; }
+    .service { min-height: 360px; padding: 34px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--ink-soft); }
+    .service:nth-child(1) { grid-column: span 7; }
+    .service:nth-child(2) { grid-column: span 5; }
+    .service:nth-child(3) { grid-column: span 5; }
+    .service:nth-child(4) { grid-column: span 7; background: var(--acid); color: var(--ink); border-color: var(--acid); }
+    .service-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+    .service-index { color: var(--paper-muted); font: 600 .78rem/1.2 Inter; letter-spacing: .1em; }
+    .service-icon { width: 50px; height: 50px; display: grid; place-items: center; border: 1px solid var(--line-bright); border-radius: 14px; color: var(--acid); }
+    .service-icon svg { width: 24px; height: 24px; }
+    .service h3 { max-width: 560px; margin-top: 64px; font-size: clamp(1.65rem, 3vw, 2.65rem); font-weight: 600; }
+    .service p { max-width: 560px; margin: 20px 0 0; color: var(--paper-muted); }
+    .service.accent .service-index, .service.accent p { color: #31421b; }
+    .service.accent .service-icon { color: var(--ink); border-color: rgba(7,17,15,.35); }
+    .service.accent h3 strong { display: block; font-size: 1.9em; letter-spacing: -.07em; }
+
+    .proof { background: #0a1512; border-block: 1px solid var(--line); }
+    .proof-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+    .proof-card { min-height: 276px; padding: 30px; border-right: 1px solid var(--line); }
+    .proof-card:last-child { border-right: 0; }
+    .proof-card .num { color: var(--acid); font: 700 .78rem/1 Inter; letter-spacing: .1em; }
+    .proof-card h3 { margin-top: 58px; font-size: 1.45rem; font-weight: 600; line-height: 1.2; letter-spacing: -.03em; }
+    .proof-card p { margin: 16px 0 0; color: var(--paper-muted); font-size: .9rem; }
+
+    .request { background: var(--paper); color: var(--ink); }
+    .request-wrap { display: grid; grid-template-columns: .78fr 1.22fr; gap: 56px; align-items: start; }
+    .request-copy { position: sticky; top: 116px; }
+    .request h2 { margin-top: 20px; font-size: clamp(2.5rem, 5.4vw, 5rem); font-weight: 600; }
+    .request-copy > p { max-width: 420px; margin: 24px 0 0; color: #4e5d57; }
+    .contact-card { margin-top: 38px; padding-top: 26px; border-top: 1px solid #c5cec6; }
+    .contact-card small { display: block; color: #66766f; margin-bottom: 6px; }
+    .contact-card a { font: 700 clamp(1.3rem, 2.5vw, 2rem)/1.2 Manrope; text-decoration: none; }
+    .form-panel { padding: 38px; border: 1px solid #c5cec6; border-radius: 28px; background: #fff; box-shadow: 0 24px 70px rgba(13,34,28,.08); }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 16px; }
+    .field { display: flex; flex-direction: column; gap: 8px; }
+    .field.full { grid-column: 1 / -1; }
+    label { font-size: .82rem; font-weight: 700; }
+    input, select, textarea {
+      width: 100%;
+      min-height: 54px;
+      border: 1px solid #c5cec6;
+      border-radius: 12px;
+      background: #f8faf6;
+      color: var(--ink);
+      padding: 13px 15px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    textarea { min-height: 108px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: #719c22; box-shadow: 0 0 0 4px rgba(113,156,34,.12); }
+    input::placeholder, textarea::placeholder { color: #85918b; }
+    .amount-row { display: grid; grid-template-columns: 1.5fr .8fr; gap: 8px; }
+    .consent { display: grid; grid-template-columns: 20px 1fr; align-items: start; gap: 10px; margin: 24px 0; color: #5a6963; font-size: .78rem; }
+    .consent input { width: 18px; min-height: 18px; margin: 2px 0 0; accent-color: #719c22; }
+    .consent a { color: var(--ink); text-underline-offset: 3px; }
+    .submit-row { display: flex; align-items: center; gap: 18px; }
+    .submit-row .button { min-width: 228px; border: 0; }
+    .submit-note { color: #66766f; font-size: .76rem; }
+    .form-status { display: none; margin-top: 18px; padding: 14px 16px; border-radius: 12px; background: #edf6dd; color: #31421b; font-size: .86rem; }
+    .form-status.show { display: block; }
+
+    footer.site-footer { padding: 36px 0; border-top: 1px solid var(--line); background: var(--ink); }
+    .footer-grid { display: flex; align-items: center; justify-content: space-between; gap: 24px; color: var(--paper-muted); font-size: .78rem; }
+    .footer-grid a { text-underline-offset: 3px; }
+
+    dialog { width: min(760px, calc(100% - 28px)); max-height: calc(100vh - 40px); padding: 0; overflow: hidden; color: var(--ink); border: 0; border-radius: 22px; box-shadow: var(--shadow); }
+    dialog::backdrop { background: rgba(1,7,5,.76); backdrop-filter: blur(5px); }
+    .dialog-head { display: flex; justify-content: space-between; gap: 20px; padding: 26px 28px 20px; border-bottom: 1px solid #dce3dc; }
+    .dialog-head h2 { font-size: 1.6rem; letter-spacing: -.03em; }
+    .close { width: 38px; height: 38px; flex: 0 0 38px; border: 1px solid #c5cec6; border-radius: 50%; background: #fff; cursor: pointer; font-size: 1.2rem; }
+    .dialog-body { max-height: calc(100vh - 150px); overflow-y: auto; padding: 24px 28px 30px; color: #46564f; font-size: .9rem; }
+    .dialog-body h3 { margin: 24px 0 8px; color: var(--ink); font-size: 1rem; letter-spacing: -.01em; }
+    .dialog-body p { margin: 0 0 12px; }
+
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 920px) {
+      nav a:not(.phone) { display: none; }
+      .hero-grid, .section-head, .about-grid, .request-wrap { grid-template-columns: 1fr; }
+      .hero { padding-top: 54px; }
+      .hero-grid { gap: 58px; }
+      .hero-copy { text-align: left; }
+      .section-head { gap: 24px; }
+      .service:nth-child(n) { grid-column: span 6; }
+      .proof-grid { grid-template-columns: 1fr 1fr; }
+      .proof-card:nth-child(2) { border-right: 0; }
+      .proof-card:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .request-copy { position: static; }
+    }
+    @media (max-width: 640px) {
+      .shell { width: min(100% - 28px, 1180px); }
+      .nav { height: 68px; }
+      .brand small, .phone { display: none; }
+      nav { gap: 0; }
+      .nav .button { min-height: 42px; padding: 0 15px; font-size: .8rem; }
+      .hero { min-height: auto; padding: 54px 0 74px; }
+      h1 { font-size: clamp(3rem, 15vw, 4.6rem); }
+      .hero-foot { gap: 16px; justify-content: space-between; }
+      .hero-fact { min-width: 0; }
+      .route-card { padding: 20px; border-radius: 22px; }
+      .route-map { height: 280px; }
+      section { padding: 80px 0; }
+      .about-main { min-height: 370px; padding: 28px; }
+      .about-main footer { left: 28px; right: 28px; bottom: 28px; }
+      .experience { min-height: 340px; padding: 28px; }
+      .services-grid { display: block; }
+      .service { min-height: 320px; margin-bottom: 14px; padding: 28px; }
+      .service h3 { margin-top: 52px; }
+      .proof-grid { grid-template-columns: 1fr; }
+      .proof-card { min-height: 230px; border-right: 0; border-bottom: 1px solid var(--line); }
+      .proof-card:last-child { border-bottom: 0; }
+      .proof-card h3 { margin-top: 40px; }
+      .form-panel { padding: 24px 18px; border-radius: 20px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .submit-row { align-items: stretch; flex-direction: column; }
+      .submit-row .button { width: 100%; }
+      .footer-grid { align-items: flex-start; flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="shell nav">
+      <a class="brand" href="#top" aria-label="ВЭД Расчёты — на главную">
+        <span class="brand-mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 6.5h7L15 11l-5 4.5H3L8 11 3 6.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 6.5h2L19 11l-5 4.5h-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </span>
+        <span>ВЭД / Расчёты<small>международные платежи</small></span>
+      </a>
+      <nav aria-label="Основная навигация">
+        <a href="#about">О команде</a>
+        <a href="#solutions">Решения</a>
+        <a class="phone" href="tel:+79803764755">+7 980 376-47-55</a>
+        <a class="button" href="#request">Обсудить платёж</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div class="hero-copy reveal">
+          <div class="eyebrow">Международные расчёты</div>
+          <h1>Платёж за рубеж.<br><span>Маршрут найден.</span></h1>
+          <p>Подбираем оптимальный маршрут и проверенных агентов для расчётов с зарубежными контрагентами — для юридических и физических лиц.</p>
+          <div class="hero-actions">
+            <a class="button" href="#request">Оставить заявку
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a class="button secondary" href="tel:+79803764755">Позвонить</a>
+          </div>
+          <div class="hero-foot" aria-label="Ключевые факты">
+            <div class="hero-fact"><b>20+ лет</b><span>банковского опыта</span></div>
+            <div class="hero-fact"><b>Без ограничений</b><span>по сфере деятельности</span></div>
+          </div>
+        </div>
+
+        <div class="route-card reveal" aria-label="Схема подбора маршрута платежа">
+          <div class="route-head">
+            <strong>Контур платежа</strong>
+            <span class="status"><i></i> маршрут доступен</span>
+          </div>
+          <div class="route-map">
+            <div class="route-line" aria-hidden="true"></div>
+            <div class="route-nodes">
+              <div class="node active"><div class="node-dot">01</div><b>Клиент</b><span>РФ</span></div>
+              <div class="node active"><div class="node-dot">02</div><b>Агент</b><span>проверка</span></div>
+              <div class="node"><div class="node-dot">03</div><b>Поставщик</b><span>за рубежом</span></div>
+            </div>
+            <div class="route-stats">
+              <div class="route-stat"><small>Тип клиента</small><b>ЮЛ / ФЛ</b></div>
+              <div class="route-stat"><small>Подход</small><b>Точечно</b></div>
+            </div>
+          </div>
+          <div class="route-note">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v6m0 4h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span>Финальный маршрут зависит от страны, валюты, назначения и параметров сделки.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about" id="about">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><div class="eyebrow">01 / Кто мы</div><h2>Опыт, который работает на сделку</h2></div>
+          <p>Команда специалистов по внешнеторговым операциям с банковским опытом более 20 лет. Работаем с резидентами и нерезидентами РФ — независимо от сферы деятельности.</p>
+        </div>
+        <div class="about-grid">
+          <div class="about-main reveal">
+            <blockquote>Понимаем, как устроены расчёты <span>изнутри банковской системы</span>, и переводим этот опыт в практичные маршруты.</blockquote>
+            <footer>Фокус — условия, риски и исполнимость конкретной операции</footer>
+          </div>
+          <div class="experience reveal">
+            <strong>Совокупный опыт команды</strong>
+            <div class="big-number">20<em>+</em></div>
+            <p>лет работы в банковской сфере и сопровождения внешнеторговых операций</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="solutions">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><div class="eyebrow">02 / Что предлагаем</div><h2>Подбираем решение под ваш платёж</h2></div>
+          <p>Анализируем параметры сделки, ищем подходящих агентов и сравниваем доступные маршруты для отправки средств в другие страны.</p>
+        </div>
+        <div class="services-grid">
+          <article class="service reveal">
+            <div class="service-top"><span class="service-index">01 / МАРШРУТ</span><span class="service-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19h3c1.5 0 2.5-1 2.5-2.5S8.5 14 7 14H6.5C5 14 4 13 4 11.5S5 9 6.5 9h11C19 9 20 8 20 6.5S19 4 17.5 4H15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="4" cy="19" r="2" stroke="currentColor" stroke-width="1.8"/><circle cx="15" cy="4" r="2" stroke="currentColor" stroke-width="1.8"/></svg></span></div>
+            <h3>Поиск оптимального маршрута платежа</h3>
+            <p>Учитываем страну, валюту, сумму, предмет контракта и тип клиента — юридическое или физическое лицо.</p>
+          </article>
+          <article class="service reveal">
+            <div class="service-top"><span class="service-index">02 / АГЕНТЫ</span><span class="service-icon"><svg viewBox="0 0 24 24" fill="none"><path d="m8 12 2.5 2.5L16 9m5 3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+            <h3>Проверенные партнёры и агенты</h3>
+            <p>Предлагаем варианты только через участников, с которыми можно выстроить прозрачную и понятную работу.</p>
+          </article>
+          <article class="service reveal">
+            <div class="service-top"><span class="service-index">03 / УСЛОВИЯ</span><span class="service-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M5 19V9m7 10V5m7 14v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m3 6 6-3 5 4 7-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+            <h3>Сравнение условий и рисков</h3>
+            <p>Помогаем найти более выгодный вариант и снизить сопутствующие затраты на проведение платежа.</p>
+          </article>
+          <article class="service accent reveal">
+            <div class="service-top"><span class="service-index">04 / КИТАЙ</span><span class="service-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 7v5l3 2m6-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+            <h3><strong>до 120 дней</strong> отсрочки оплаты товаров</h3>
+            <p>Для компаний, которые работают с китайскими поставщиками: поможем организовать отсрочку оплаты по согласованным условиям.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="proof" id="advantages">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><div class="eyebrow">03 / Почему мы</div><h2>Без лишних обещаний. По существу.</h2></div>
+          <p>Работаем от параметров конкретной сделки и заранее разбираем ключевые условия, чтобы решение было понятным ещё до запуска платежа.</p>
+        </div>
+        <div class="proof-grid">
+          <article class="proof-card reveal"><div class="num">01</div><h3>Не берём оплату с клиента</h3><p>Консультация и подбор доступного решения — без комиссии с вашей стороны.</p></article>
+          <article class="proof-card reveal"><div class="num">02</div><h3>Проверяем участников</h3><p>Работаем только с отобранными агентами и партнёрами.</p></article>
+          <article class="proof-card reveal"><div class="num">03</div><h3>Сравниваем варианты</h3><p>Ищем условия, которые помогают снизить расходы на расчёты.</p></article>
+          <article class="proof-card reveal"><div class="num">04</div><h3>Учитываем риски</h3><p>Оцениваем параметры операции до выбора маршрута и агента.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="request" id="request">
+      <div class="shell request-wrap">
+        <div class="request-copy reveal">
+          <div class="eyebrow">Заявка на расчёт</div>
+          <h2>Расскажите о платеже</h2>
+          <p>Заполните параметры — мы разберём задачу и свяжемся с вами по указанным контактам.</p>
+          <div class="contact-card"><small>Предпочитаете обсудить голосом?</small><a href="tel:+79803764755">+7 980 376-47-55</a></div>
+        </div>
+        <form class="form-panel reveal" id="lead-form">
+          <div class="form-grid">
+            <div class="field full"><label for="company">Наименование компании</label><input id="company" name="company" type="text" autocomplete="organization" placeholder="ООО «Компания»" required></div>
+            <div class="field"><label for="inn">ИНН</label><input id="inn" name="inn" inputmode="numeric" pattern="[0-9]{10}|[0-9]{12}" placeholder="10 или 12 цифр" required></div>
+            <div class="field"><label for="amount">Сумма платежа / контракта</label><div class="amount-row"><input id="amount" name="amount" inputmode="decimal" placeholder="Например, 50 000" required><select id="currency" name="currency" aria-label="Валюта" required><option value="" selected disabled>Валюта</option><option>USD</option><option>EUR</option><option>CNY</option><option>RUB</option><option>AED</option><option>Другая</option></select></div></div>
+            <div class="field"><label for="country">Страна платежа</label><input id="country" name="country" type="text" placeholder="Например, Китай" required></div>
+            <div class="field full"><label for="goods">ТН ВЭД / CN-код товара или наименование услуги</label><textarea id="goods" name="goods" placeholder="Опишите товар или услугу, если код неизвестен" required></textarea></div>
+            <div class="field full"><label for="contacts">Контакты для связи</label><input id="contacts" name="contacts" type="text" autocomplete="email" placeholder="Телефон, email или Telegram" required></div>
+          </div>
+          <label class="consent"><input id="consent" name="consent" type="checkbox" required><span>Я даю <a href="#privacy" data-open-privacy>согласие на обработку персональных данных</a> в соответствии с Федеральным законом № 152-ФЗ и принимаю условия политики обработки персональных данных.</span></label>
+          <div class="submit-row"><button class="button" type="submit">Подготовить заявку <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="submit-note">Ответим по указанным контактам</span></div>
+          <div class="form-status" id="form-status" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-grid"><span>© 2026 ВЭД / Расчёты</span><a href="#privacy" data-open-privacy>Обработка персональных данных</a><span>Информация на сайте не является публичной офертой</span></div>
+  </footer>
+
+  <dialog id="privacy-dialog" aria-labelledby="privacy-title">
+    <div class="dialog-head"><h2 id="privacy-title">Согласие на обработку персональных данных</h2><button class="close" type="button" data-close-privacy aria-label="Закрыть">×</button></div>
+    <div class="dialog-body">
+      <p>Оставляя заявку на сайте, пользователь свободно, своей волей и в своём интересе даёт владельцу сайта согласие на обработку персональных данных в соответствии с Федеральным законом от 27.07.2006 № 152-ФЗ «О персональных данных».</p>
+      <h3>Перечень данных</h3>
+      <p>Наименование компании, ИНН, сведения о предполагаемой операции, стране и товаре или услуге, а также предоставленные контакты для связи.</p>
+      <h3>Цели обработки</h3>
+      <p>Рассмотрение запроса, подготовка ответа и предложений по услугам, обратная связь с пользователем, а также выполнение требований законодательства РФ.</p>
+      <h3>Действия с данными</h3>
+      <p>Сбор, запись, систематизация, накопление, хранение, уточнение, использование, передача лицам, привлекаемым для обработки запроса в необходимом объёме, блокирование и удаление — с применением средств автоматизации или без них.</p>
+      <h3>Срок и отзыв согласия</h3>
+      <p>Согласие действует до достижения целей обработки или его отзыва. Отозвать согласие можно, направив обращение владельцу сайта по телефону <a href="tel:+79803764755">+7 980 376-47-55</a>. Отзыв не влияет на законность обработки, выполненной до его получения.</p>
+      <p><strong>Важно:</strong> перед публичным запуском в этот документ необходимо добавить полное наименование и адрес оператора персональных данных, а также email для обращений.</p>
+    </div>
+  </dialog>
+
+  <script>
+    const EMAIL_RECIPIENT = '';
+    const form = document.querySelector('#lead-form');
+    const statusBox = document.querySelector('#form-status');
+    const privacyDialog = document.querySelector('#privacy-dialog');
+
+    document.querySelectorAll('[data-open-privacy]').forEach(link => link.addEventListener('click', event => {
+      event.preventDefault();
+      privacyDialog.showModal();
+    }));
+    document.querySelector('[data-close-privacy]').addEventListener('click', () => privacyDialog.close());
+    privacyDialog.addEventListener('click', event => {
+      const rect = privacyDialog.getBoundingClientRect();
+      if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) privacyDialog.close();
+    });
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      const data = new FormData(form);
+      const subject = `Заявка на международный платёж — ${data.get('company')}`;
+      const body = [
+        'Новая заявка с сайта',
+        '',
+        `Компания: ${data.get('company')}`,
+        `ИНН: ${data.get('inn')}`,
+        `Сумма: ${data.get('amount')} ${data.get('currency')}`,
+        `Страна: ${data.get('country')}`,
+        `ТН ВЭД / услуга: ${data.get('goods')}`,
+        `Контакты: ${data.get('contacts')}`,
+        '',
+        'Пользователь подтвердил согласие на обработку персональных данных.'
+      ].join('\n');
+
+      if (EMAIL_RECIPIENT) {
+        window.location.href = `mailto:${EMAIL_RECIPIENT}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        statusBox.textContent = 'Заявка подготовлена. Открываем почтовое приложение для отправки.';
+      } else {
+        try { await navigator.clipboard.writeText(`${subject}\n\n${body}`); } catch (_) {}
+        statusBox.textContent = 'Данные заявки подготовлены. Для отправки на почту осталось подключить адрес получателя; текст заявки скопирован в буфер обмена.';
+      }
+      statusBox.classList.add('show');
+    });
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } });
+    }, { threshold: .12 });
+    document.querySelectorAll('.reveal').forEach(element => observer.observe(element));
+  </script>
+</body>
+</html>
