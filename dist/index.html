@@ -446,9 +446,12 @@
     @media (max-width: 920px) {
       nav a:not(.phone) { display: none; }
       .hero-grid, .section-head, .about-grid, .request-wrap { grid-template-columns: 1fr; }
+      .hero-grid { width: 100%; min-width: 0; }
       .hero { padding-top: 54px; }
       .hero-grid { gap: 58px; }
+      .hero-copy, .hero-visual { min-width: 0; }
       .hero-copy { text-align: left; }
+      .hero-copy > p { max-width: 100%; overflow-wrap: anywhere; }
       .hero-visual { min-height: 590px; }
       .planet-stage { inset: -2% 2%; }
       .section-head { gap: 24px; }
