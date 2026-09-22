@@ -74,13 +74,16 @@ $message = implode("\r\n", [
 
 $headers = implode("\r\n", [
     'From: VED Payments <noreply@vedpayhelp.ru>',
+    'Sender: noreply@vedpayhelp.ru',
     'Reply-To: noreply@vedpayhelp.ru',
+    'Date: ' . date(DATE_RFC2822),
+    'Message-ID: <' . sha1(uniqid('', true)) . '@vedpayhelp.ru>',
     'MIME-Version: 1.0',
     'Content-Type: text/plain; charset=UTF-8',
     'Content-Transfer-Encoding: 8bit',
 ]);
 
-if (!mail('4eloveg31@gmail.com', $subject, $message, $headers)) {
+if (!mail('4eloveg31@gmail.com', $subject, $message, $headers, '-f noreply@vedpayhelp.ru')) {
     respond(500, false, 'Сервис отправки временно недоступен.');
 }
 
