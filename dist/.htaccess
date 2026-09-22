@@ -1,0 +1,12 @@
+Options -Indexes
+AddDefaultCharset UTF-8
+
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://vedpayhelp.ru%{REQUEST_URI} [R=301,L]
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+</IfModule>
