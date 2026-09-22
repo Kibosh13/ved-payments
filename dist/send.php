@@ -56,7 +56,7 @@ if ((isset($_POST['consent']) ? $_POST['consent'] : '') !== 'on') {
     respond(422, false, 'Необходимо согласие на обработку персональных данных.');
 }
 
-$subjectText = 'Заявка на международный платёж — ' . $company;
+$subjectText = 'Новая заявка с сайта — ' . $company;
 $subject = '=?UTF-8?B?' . base64_encode($subjectText) . '?=';
 $message = implode("\r\n", [
     'Новая заявка с сайта vedpayhelp.ru',
@@ -74,13 +74,14 @@ $message = implode("\r\n", [
 
 $headers = implode("\r\n", [
     'From: VED Payments <requests@vedpayhelp.ru>',
-    'Sender: requests@vedpayhelp.ru',
     'Reply-To: requests@vedpayhelp.ru',
     'Date: ' . date(DATE_RFC2822),
     'Message-ID: <' . sha1(uniqid('', true)) . '@vedpayhelp.ru>',
     'MIME-Version: 1.0',
     'Content-Type: text/plain; charset=UTF-8',
     'Content-Transfer-Encoding: 8bit',
+    'Auto-Submitted: auto-generated',
+    'X-Auto-Response-Suppress: All',
 ]);
 
 if (!mail('requests@vedpayhelp.ru', $subject, $message, $headers, '-f requests@vedpayhelp.ru')) {
