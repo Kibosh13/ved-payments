@@ -1,28 +1,28 @@
 <?php
-declare(strict_types=1);
 
 header('Content-Type: application/json; charset=UTF-8');
 header('X-Content-Type-Options: nosniff');
 header('Cache-Control: no-store');
 
-function respond(int $status, bool $ok, string $message)
+function respond($status, $ok, $message)
 {
     http_response_code($status);
     echo json_encode(['ok' => $ok, 'message' => $message], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
 
-function field(string $name, int $maxLength): string
+function field($name, $maxLength)
 {
-    $value = trim((string)($_POST[$name] ?? ''));
-    $value = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $value) ?? '';
+    $value = trim((string)(isset($_POST[$name]) ? $_POST[$name] : ''));
+    $cleaned = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $value);
+    $value = $cleaned === null ? '' : $cleaned;
     if ($value === '' || mb_strlen($value) > $maxLength) {
         respond(422, false, 'Проверьте заполнение обязательных полей.');
     }
     return $value;
 }
 
-if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+if ((isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '') !== 'POST') {
     respond(405, false, 'Метод запроса не поддерживается.');
 }
 
@@ -30,20 +30,20 @@ if (!empty($_POST['website'])) {
     respond(200, true, 'Заявка отправлена.');
 }
 
-$host = strtolower((string)($_SERVER['HTTP_HOST'] ?? ''));
-$origin = strtolower((string)($_SERVER['HTTP_ORIGIN'] ?? ''));
-if ($origin !== '' && !in_array($origin, ['https://vedpayhelp.ru', 'https://www.vedpayhelp.ru'], true)) {
+$origin = strtolower((string)(isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : ''));
+if ($origin !== '' && !in_array($origin, ['http://vedpayhelp.ru', 'http://www.vedpayhelp.ru', 'https://vedpayhelp.ru', 'https://www.vedpayhelp.ru'], true)) {
     respond(403, false, 'Запрос отклонён. Обновите страницу и попробуйте снова.');
 }
 
-$rateFile = sys_get_temp_dir() . '/vedpayhelp-' . hash('sha256', (string)($_SERVER['REMOTE_ADDR'] ?? 'unknown'));
+$rateFile = sys_get_temp_dir() . '/vedpayhelp-' . hash('sha256', (string)(isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'unknown'));
 $lastSent = is_file($rateFile) ? (int)file_get_contents($rateFile) : 0;
 if ($lastSent > time() - 30) {
     respond(429, false, 'Заявка уже отправляется. Повторите попытку через минуту.');
 }
 
 $company = field('company', 160);
-$inn = preg_replace('/\D+/', '', field('inn', 12)) ?? '';
+$normalizedInn = preg_replace('/\D+/', '', field('inn', 12));
+$inn = $normalizedInn === null ? '' : $normalizedInn;
 if (!preg_match('/^(\d{10}|\d{12})$/', $inn)) {
     respond(422, false, 'Укажите ИНН из 10 или 12 цифр.');
 }
@@ -52,7 +52,7 @@ $currency = field('currency', 20);
 $country = field('country', 100);
 $goods = field('goods', 1500);
 $contacts = field('contacts', 250);
-if (($_POST['consent'] ?? '') !== 'on') {
+if ((isset($_POST['consent']) ? $_POST['consent'] : '') !== 'on') {
     respond(422, false, 'Необходимо согласие на обработку персональных данных.');
 }
 
