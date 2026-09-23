@@ -6,7 +6,18 @@
   <meta name="theme-color" content="#050817">
   <meta name="robots" content="index, follow">
   <meta name="description" content="Подбор маршрутов и проверенных агентов для международных платежей бизнеса и физических лиц.">
+  <meta name="yandex-verification" content="56075c0ef6ac4392">
   <title>ВЭД / Расчёты — международные платежные маршруты</title>
+  <!-- Yandex.Metrika counter -->
+  <script>
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
+    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
+
+    ym(112949250, 'init', {clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true});
+  </script>
+  <!-- /Yandex.Metrika counter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
@@ -507,6 +518,7 @@
   </style>
 </head>
 <body>
+  <noscript><div><img src="https://mc.yandex.ru/watch/112949250" style="position:absolute; left:-9999px" alt=""></div></noscript>
   <header>
     <div class="shell nav">
       <a class="brand" href="#top" aria-label="ВЭД Расчёты — на главную">
@@ -663,6 +675,7 @@
       <p>Оставляя заявку на сайте, пользователь свободно, своей волей и в своём интересе даёт владельцу сайта согласие на обработку персональных данных в соответствии с Федеральным законом от 27.07.2006 № 152-ФЗ «О персональных данных».</p>
       <h3>Перечень данных</h3>
       <p>Наименование компании, ИНН, сведения о предполагаемой операции, стране и товаре или услуге, а также предоставленные контакты для связи.</p>
+      <p>Для анализа работы сайта могут обрабатываться технические данные: IP-адрес, файлы cookie, сведения о браузере, устройстве, посещённых страницах и действиях на сайте. Для веб-аналитики используется сервис «Яндекс Метрика».</p>
       <h3>Цели обработки</h3>
       <p>Рассмотрение запроса, подготовка ответа и предложений по услугам, обратная связь с пользователем, а также выполнение требований законодательства РФ.</p>
       <h3>Действия с данными</h3>
@@ -706,6 +719,7 @@
         form.reset();
         statusBox.textContent = 'Спасибо! Заявка отправлена. Мы свяжемся с вами по указанным контактам.';
         statusBox.classList.add('show');
+        if (typeof window.ym === 'function') window.ym(112949250, 'reachGoal', 'lead_form_success');
       } catch (error) {
         statusBox.textContent = `${error.message || 'Не удалось отправить заявку.'} Позвоните нам по номеру +7 925 156-94-99.`;
         statusBox.classList.add('show', 'error');
